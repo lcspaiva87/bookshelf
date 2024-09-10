@@ -1,19 +1,20 @@
 /** @jsx jsx */
-import {jsx} from '@emotion/core'
 
+import Tooltip from '@reach/tooltip'
 import * as React from 'react'
 import {
-  FaCheckCircle,
-  FaPlusCircle,
-  FaMinusCircle,
   FaBook,
+  FaCheckCircle,
+  FaMinusCircle,
+  FaPlusCircle,
   FaTimesCircle,
 } from 'react-icons/fa'
-import Tooltip from '@reach/tooltip'
 // 🐨 you'll need useQuery, useMutation, and queryCache from 'react-query'
 // 🐨 you'll also need client from 'utils/api-client'
-import {useAsync} from 'utils/hooks'
+import {useQuery} from 'react-query/dist/react-query.development'
 import * as colors from 'styles/colors'
+import {client} from 'utils/api-client.final'
+import {useAsync} from 'utils/hooks'
 import {CircleButton, Spinner} from './lib'
 
 function TooltipButton({label, highlight, onClick, icon, ...rest}) {
@@ -54,7 +55,13 @@ function StatusButtons({user, book}) {
 
   // 🐨 search through the listItems you got from react-query and find the
   // one with the right bookId.
-  const listItem = null
+  const {data: listItems} = useQuery({
+    queryKey: ['list-items'],
+    queryFn: () =>
+      client('list-items', {token: user.token}).then(data => data.listItem),
+    enabled: Boolean(user),
+  })
+  const listItem = listItems.find(item => item.bookId === book.id) ?? null
 
   // 💰 for all the mutations below, if you want to get the list-items cache
   // updated after this query finishes then use the `onSettled` config option
