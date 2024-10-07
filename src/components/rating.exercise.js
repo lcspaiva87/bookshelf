@@ -1,11 +1,12 @@
 /** @jsx jsx */
-import {jsx} from '@emotion/core'
 
 import * as React from 'react'
 // 🐨 you'll need useMutation and queryCache from react-query
 // 🐨 you'll also need the client from utils/api-client
-import {FaStar} from 'react-icons/fa'
+import { FaStar } from 'react-icons/fa'
+import { queryCache, useMutation } from 'react-query/dist/react-query.development'
 import * as colors from 'styles/colors'
+import { client } from 'utils/api-client.final'
 
 const visuallyHiddenCSS = {
   border: '0',
@@ -26,7 +27,15 @@ function Rating({listItem, user}) {
   //   you can pass as data.
   // 💰 if you want to get the list-items cache updated after this query finishes
   // then use the `onSettled` config option to queryCache.invalidateQueries('list-items')
-  const update = () => {}
+  const [update] = useMutation(
+    updates =>
+      client(`list-items/${updates.id}`, {
+        method: 'PUT',
+        data: updates,
+        token: user.token,
+      }),
+    {onSettled: () => queryCache.invalidateQueries('list-items')},
+  )
 
   React.useEffect(() => {
     function handleKeyDown(event) {
@@ -110,4 +119,5 @@ function Rating({listItem, user}) {
   )
 }
 
-export {Rating}
+export { Rating }
+
