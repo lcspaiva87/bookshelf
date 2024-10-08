@@ -1,4 +1,4 @@
-const { useQuery } = require("react-query/dist/react-query.development");
+const { useQuery, useMutation, queryCache } = require("react-query/dist/react-query.development");
 const { client } = require("./api-client");
 function useListItems(user) {
   const {data: listItem} = useQuery({  
@@ -13,5 +13,18 @@ function useListItem(user,bookId) {
     const listItems = useListItems(user)
 return listItems.find(li => li.bookId === bookId) || null
 }
-
-export { useListItem, useListItems };
+function useUpdateItems(user) {
+    return useMutation(
+        updates => {
+            return client('list-items', {
+                method: 'PUT',
+                data: updates,
+                token: user.token,
+            })
+        },
+        {
+            onSettled: () => queryCache.invalidateQueries('list-items'),
+        }
+    )
+}
+export { useListItem, useListItems, useUpdateItems };

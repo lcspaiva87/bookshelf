@@ -13,13 +13,13 @@ import {
 // 🐨 you'll also need client from 'utils/api-client'
 import {
   queryCache,
-  useMutation,
-  useQuery,
+  useMutation
 } from 'react-query/dist/react-query.development'
 import * as colors from 'styles/colors'
-import {client} from 'utils/api-client.final'
-import {useAsync} from 'utils/hooks'
-import {CircleButton, Spinner} from './lib'
+import { client } from 'utils/api-client.final'
+import { useAsync } from 'utils/hooks'
+import { useListItem, useUpdateItems } from 'utils/list-items.exercise'
+import { CircleButton, Spinner } from './lib'
 
 function TooltipButton({label, highlight, onClick, icon, ...rest}) {
   const {isLoading, isError, error, run} = useAsync()
@@ -56,16 +56,10 @@ function StatusButtons({user, book}) {
   // 🐨 call useQuery here to get the listItem (if it exists)
   // queryKey should be 'list-items'
   // queryFn should call the list-items endpoint
-
+  const listItem = useListItem(user, book.id)
   // 🐨 search through the listItems you got from react-query and find the
   // one with the right bookId.
-  const {data: listItems} = useQuery({
-    queryKey: ['list-items'],
-    queryFn: () =>
-      client('list-items', {token: user.token}).then(data => data.listItem),
-    enabled: Boolean(user),
-  })
-  const listItem = listItems.find(item => item.bookId === book.id) ?? null
+  const [update] =useUpdateItems(user)
 
   // 💰 for all the mutations below, if you want to get the list-items cache
   // updated after this query finishes then use the `onSettled` config option
@@ -76,17 +70,7 @@ function StatusButtons({user, book}) {
   //   and the updates as data. The mutate function will be called with the updates
   //   you can pass as data.
 
-  const [update] = useMutation(
-    ({updates}) =>
-      client(`list-items/${updates.id}`, {
-        method: 'PUT',
-        data: updates,
-        token: user.token,
-      }),
-    {
-      onSettled: () => queryCache.invalidateQueries('list-items'),
-    },
-  )
+ 
   // 🐨 call useMutation here and assign the mutate function to "remove"
   // the mutate function should call the list-items/:listItemId endpoint with a DELETE
   const [remove] = useMutation(
@@ -162,4 +146,5 @@ function StatusButtons({user, book}) {
   )
 }
 
-export {StatusButtons}
+export { StatusButtons }
+

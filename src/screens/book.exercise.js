@@ -11,11 +11,10 @@ import bookPlaceholderSvg from 'assets/book-placeholder.svg'
 import { Textarea } from 'components/lib'
 import { Rating } from 'components/rating'
 import { StatusButtons } from 'components/status-buttons'
-import { useQuery } from 'react-query/dist/react-query.development'
 import * as colors from 'styles/colors'
 import * as mq from 'styles/media-queries'
-import { client } from 'utils/api-client'
 import { useBook } from 'utils/books.exercise'
+import { useListItems, useUpdateItems } from 'utils/list-items.exercise'
 import { formatDate } from 'utils/misc'
 
 const loadingBook = {
@@ -37,17 +36,10 @@ function BookScreen({user}) {
   // queryFn should be what's currently passed in the run function below
 
   // 💣 remove the useEffect here (react-query will handle that now)
-  React.useEffect(() => {
-    run(client(`books/${bookId}`, {token: user.token}))
-  }, [run, bookId, user.token])
-
+  // React.useEffect(() => {
   // 🐨 call useQuery to get the list item from the list-items endpoint
   // queryKey should be 'list-items'
-  // queryFn should call the 'list-items' endpoint with the user's token
-  const {data: listItems} = useQuery({
-    queryKey: 'list-items',
-    queryFn: () => client('list-items', {token: user.token}),
-  })
+  const listItems = useListItems(user,bookId)
   const listItem = listItems?.find(li => li.bookId === bookId) || null
   // 🦉 NOTE: the backend doesn't support getting a single list-item by it's ID
   // and instead expects us to cache all the list items and look them up in our
@@ -136,6 +128,10 @@ function ListItemTimeframe({listItem}) {
 }
 
 function NotesTextarea({listItem, user}) {
+  const [mutate] =  useUpdateItems=(user)
+  const debouncedMutate = React.useMemo(() => debounceFn(mutate, {wait: 1000}), [
+    
+  ])
   // 🐨 call useMutation here
   // the mutate function should call the list-items/:listItemId endpoint with a PUT
   //   and the updates as data. The mutate function will be called with the updates
@@ -144,11 +140,7 @@ function NotesTextarea({listItem, user}) {
   // then use the `onSettled` config option to queryCache.invalidateQueries('list-items')
   // 💣 DELETE THIS ESLINT IGNORE!! Don't ignore the exhaustive deps rule please
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const mutate = () => {}
-  const debouncedMutate = React.useMemo(
-    () => debounceFn(mutate, {wait: 300}),
-    [mutate],
-  )
+
 
   function handleNotesChange(e) {
     debouncedMutate({id: listItem.id, notes: e.target.value})
