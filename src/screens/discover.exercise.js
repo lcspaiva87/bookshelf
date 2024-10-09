@@ -7,7 +7,7 @@ import { FaSearch, FaTimes } from 'react-icons/fa'
 import { BookRow } from 'components/book-row'
 import { BookListUL, Input, Spinner } from 'components/lib'
 import * as colors from 'styles/colors'
-import { useBookSearch } from 'utils/books.exercise'
+import { refetchBookSearchQuery, useBookSearch } from 'utils/books.exercise'
 
 
 
@@ -20,7 +20,9 @@ function DiscoverBooksScreen({user}) {
   // you'll get back the same stuff you get from useAsync, (except the run function)
   const {books, error, isLoading, isError, isSuccess} = useBookSearch(query, user)
 
- 
+  React.useEffect(() => {
+    return () => refetchBookSearchQuery(user)
+  }, [queried])
 
   function handleSearchSubmit(event) {
     event.preventDefault()

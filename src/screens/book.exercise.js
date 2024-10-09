@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom'
 // 🐨 you'll need these:
 // import {useQuery, useMutation, queryCache} from 'react-query'
 import bookPlaceholderSvg from 'assets/book-placeholder.svg'
-import { Textarea } from 'components/lib'
+import { ErrorMessage, Spinner, Textarea } from 'components/lib'
 import { Rating } from 'components/rating'
 import { StatusButtons } from 'components/status-buttons'
 import * as colors from 'styles/colors'
@@ -128,10 +128,8 @@ function ListItemTimeframe({listItem}) {
 }
 
 function NotesTextarea({listItem, user}) {
-  const [mutate] =  useUpdateItems=(user)
-  const debouncedMutate = React.useMemo(() => debounceFn(mutate, {wait: 1000}), [
-    
-  ])
+  const [mutate,{error,isError,isLoading}] =  useUpdateItems=(user)
+  const debouncedMutate = React.useMemo(() => debounceFn(mutate, {wait: 300}), [])
   // 🐨 call useMutation here
   // the mutate function should call the list-items/:listItemId endpoint with a PUT
   //   and the updates as data. The mutate function will be called with the updates
@@ -161,6 +159,13 @@ function NotesTextarea({listItem, user}) {
         >
           Notes
         </label>
+        {isError ? (
+          <ErrorMessage error={error} variant='inline'  
+          css={{marginLeft: 6,fontSize: '0.7em'}}
+          
+          />
+        ) : null}
+      {isLoading ? <Spinner css={{marginLeft: 6}} /> : null}
       </div>
       <Textarea
         id="notes"

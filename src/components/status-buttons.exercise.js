@@ -11,21 +11,20 @@ import {
 } from 'react-icons/fa'
 // 🐨 you'll need useQuery, useMutation, and queryCache from 'react-query'
 // 🐨 you'll also need client from 'utils/api-client'
-import {
-  queryCache,
-  useMutation
-} from 'react-query/dist/react-query.development'
 import * as colors from 'styles/colors'
-import { client } from 'utils/api-client.final'
+import { reset } from 'test/data/books'
 import { useAsync } from 'utils/hooks'
-import { useListItem, useUpdateItems } from 'utils/list-items.exercise'
+import { useCreateListItem, useListItem, useUpdateItems } from 'utils/list-items.exercise'
+import { useRemoveListItem } from 'utils/list-items.extra-1'
 import { CircleButton, Spinner } from './lib'
 
 function TooltipButton({label, highlight, onClick, icon, ...rest}) {
   const {isLoading, isError, error, run} = useAsync()
 
   function handleClick() {
-    run(onClick())
+    if(isError) {
+      reset()
+    }else{run(onClick())}
   }
 
   return (
@@ -59,7 +58,7 @@ function StatusButtons({user, book}) {
   const listItem = useListItem(user, book.id)
   // 🐨 search through the listItems you got from react-query and find the
   // one with the right bookId.
-  const [update] =useUpdateItems(user)
+  const [update] =useUpdateItems(user,{throwOnError:true})
 
   // 💰 for all the mutations below, if you want to get the list-items cache
   // updated after this query finishes then use the `onSettled` config option
@@ -73,29 +72,14 @@ function StatusButtons({user, book}) {
  
   // 🐨 call useMutation here and assign the mutate function to "remove"
   // the mutate function should call the list-items/:listItemId endpoint with a DELETE
-  const [remove] = useMutation(
-    ({id}) =>
-      client(`list-items/${id}`, {
-        method: 'DELETE',
-        token: user.token,
-      }),
-    {
-      onSettled: () => queryCache.invalidateQueries('list-items'),
-    },
+  const [remove] = useRemoveListItem(
+    user,
+    {throwOnError:true}
   )
   // 🐨 call useMutation here and assign the mutate function to "create"
   // the mutate function should call the list-items endpoint with a POST
   // and the bookId the listItem is being created for.
-  const [create] = useMutation(
-    ({bookId}) =>
-      client('list-items', {
-        data: {bookId},
-        token: user.token,
-      }),
-    {
-      onSettled: () => queryCache.invalidateQueries('list-items'),
-    },
-  )
+  const [create] = useCreateListItem(user,{throwOnError:true})
   return (
     <React.Fragment>
       {listItem ? (
