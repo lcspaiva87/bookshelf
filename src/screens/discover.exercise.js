@@ -2,14 +2,12 @@
 
 import Tooltip from '@reach/tooltip'
 import * as React from 'react'
-import { FaSearch, FaTimes } from 'react-icons/fa'
+import {FaSearch, FaTimes} from 'react-icons/fa'
 // 🐨 you'll need useQuery from 'react-query'
-import { BookRow } from 'components/book-row'
-import { BookListUL, Input, Spinner } from 'components/lib'
+import {BookRow} from 'components/book-row'
+import {BookListUL, Input, Spinner} from 'components/lib'
 import * as colors from 'styles/colors'
-import { refetchBookSearchQuery, useBookSearch } from 'utils/books.exercise'
-
-
+import {refetchBookSearchQuery, useBookSearch} from 'utils/books.exercise'
 
 function DiscoverBooksScreen({user}) {
   const [query, setQuery] = React.useState('')
@@ -18,7 +16,7 @@ function DiscoverBooksScreen({user}) {
   // the queryKey should be ['bookSearch', {query}]
   // the queryFn should be the same thing we have in the run function below
   // you'll get back the same stuff you get from useAsync, (except the run function)
-  const {books, error, isLoading, isError, isSuccess} = useBookSearch(query, user)
+  const {books, error, isLoading, isError, isSuccess} = useBookSearch(query)
 
   React.useEffect(() => {
     return () => refetchBookSearchQuery(user)
@@ -103,5 +101,4 @@ function DiscoverBooksScreen({user}) {
   )
 }
 
-export { DiscoverBooksScreen }
-
+export {DiscoverBooksScreen}

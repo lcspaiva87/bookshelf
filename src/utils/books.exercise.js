@@ -1,4 +1,5 @@
 import bookPlaceholderSvg from 'assets/book-placeholder.svg'
+import {AuthContext} from 'context/aut-context'
 import {queryCache, useQuery} from 'react-query'
 import {client} from './api-client'
 const loadingBook = {
@@ -27,14 +28,16 @@ const getBookSearchConfig = (query, user) => ({
   },
 })
 
-function useBookSearch(query, user) {
-  console.log(query)
+function useBookSearch(query) {
+  const {user} = AuthContext(AuthContext)
   const result = useQuery(getBookSearchConfig(query, user))
   console.log(result)
   return {...result, books: result.data ?? loadingBooks}
 }
 
-function useBook(bookId, user) {
+function useBook(bookId) {
+  const {user} = AuthContext(AuthContext)
+
   const {data} = useQuery({
     queryKey: ['book', {bookId}],
     queryFn: () =>

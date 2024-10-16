@@ -2,15 +2,16 @@
 
 import * as auth from 'auth-provider'
 import * as React from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
+import {BrowserRouter as Router} from 'react-router-dom'
 // 🐨 you'll need the queryCache from react-query
-import { queryCache } from 'react-query/dist/react-query.development'
-import { AuthenticatedApp } from './authenticated-app'
-import { FullPageSpinner } from './components/lib'
+import {AuthContext} from 'context/auth-context'
+import {queryCache} from 'react-query/dist/react-query.development'
+import {AuthenticatedApp} from './authenticated-app'
+import {FullPageSpinner} from './components/lib'
 import * as colors from './styles/colors'
-import { UnauthenticatedApp } from './unauthenticated-app'
-import { client } from './utils/api-client'
-import { useAsync } from './utils/hooks'
+import {UnauthenticatedApp} from './unauthenticated-app'
+import {client} from './utils/api-client'
+import {useAsync} from './utils/hooks'
 
 async function getUser() {
   let user = null
@@ -73,15 +74,18 @@ function App() {
 
   if (isSuccess) {
     const props = {user, login, register, logout}
-    return user ? (
-      <Router>
-        <AuthenticatedApp {...props} />
-      </Router>
-    ) : (
-      <UnauthenticatedApp {...props} />
+    return (
+      <AuthContext.Provider value={props}>
+        {user ? (
+          <Router>
+            <AuthenticatedApp {...props} />
+          </Router>
+        ) : (
+          <UnauthenticatedApp {...props} />
+        )}
+      </AuthContext.Provider>
     )
   }
 }
 
-export { App }
-
+export {App}

@@ -1,10 +1,10 @@
 /** @jsx jsx */
-import {jsx} from '@emotion/core'
 
-import * as React from 'react'
-import {Input, Button, Spinner, FormGroup, ErrorMessage} from './components/lib'
-import {Modal, ModalContents, ModalOpenButton} from './components/modal'
+import {AuthContext} from 'context/aut-context'
+import React from 'react'
+import {Button, ErrorMessage, FormGroup, Input, Spinner} from './components/lib'
 import {Logo} from './components/logo'
+import {Modal, ModalContents, ModalOpenButton} from './components/modal'
 import {useAsync} from './utils/hooks'
 
 function LoginForm({onSubmit, submitButton}) {
@@ -12,7 +12,6 @@ function LoginForm({onSubmit, submitButton}) {
   function handleSubmit(event) {
     event.preventDefault()
     const {username, password} = event.target.elements
-
     run(
       onSubmit({
         username: username.value,
@@ -58,7 +57,8 @@ function LoginForm({onSubmit, submitButton}) {
   )
 }
 
-function UnauthenticatedApp({login, register}) {
+function UnauthenticatedApp() {
+  const {login, register} = React.useContext(AuthContext)
   return (
     <div
       css={{

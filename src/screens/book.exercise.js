@@ -3,33 +3,23 @@
 import Tooltip from '@reach/tooltip'
 import debounceFn from 'debounce-fn'
 import * as React from 'react'
-import { FaRegCalendarAlt } from 'react-icons/fa'
-import { useParams } from 'react-router-dom'
+import {FaRegCalendarAlt} from 'react-icons/fa'
+import {useParams} from 'react-router-dom'
 // 🐨 you'll need these:
 // import {useQuery, useMutation, queryCache} from 'react-query'
-import bookPlaceholderSvg from 'assets/book-placeholder.svg'
-import { ErrorMessage, Spinner, Textarea } from 'components/lib'
-import { Rating } from 'components/rating'
-import { StatusButtons } from 'components/status-buttons'
+import {ErrorMessage, Spinner, Textarea} from 'components/lib'
+import {Rating} from 'components/rating'
+import {StatusButtons} from 'components/status-buttons'
 import * as colors from 'styles/colors'
 import * as mq from 'styles/media-queries'
-import { useBook } from 'utils/books.exercise'
-import { useListItems, useUpdateItems } from 'utils/list-items.exercise'
-import { formatDate } from 'utils/misc'
-
-const loadingBook = {
-  title: 'Loading...',
-  author: 'loading...',
-  coverImageUrl: bookPlaceholderSvg,
-  publisher: 'Loading Publishing',
-  synopsis: 'Loading...',
-  loadingBook: true,
-}
+import {useBook} from 'utils/books.exercise'
+import {useListItems, useUpdateItems} from 'utils/list-items.exercise'
+import {formatDate} from 'utils/misc'
 
 function BookScreen({user}) {
   const {bookId} = useParams()
   // 💣 remove the useAsync call here
-  const {data, run} = useBook(bookId, user)
+  const book = useBook(bookId)
 
   // 🐨 call useQuery here
   // queryKey should be ['book', {bookId}]
@@ -39,13 +29,10 @@ function BookScreen({user}) {
   // React.useEffect(() => {
   // 🐨 call useQuery to get the list item from the list-items endpoint
   // queryKey should be 'list-items'
-  const listItems = useListItems(user,bookId)
-  const listItem = listItems?.find(li => li.bookId === bookId) || null
+  const listItem = useListItems(user, bookId)
   // 🦉 NOTE: the backend doesn't support getting a single list-item by it's ID
   // and instead expects us to cache all the list items and look them up in our
   // cache. This works out because we're using react-query for caching!
-
-  const book = data?.book ?? loadingBook
   const {title, author, coverImageUrl, publisher, synopsis} = book
 
   return (
@@ -128,8 +115,11 @@ function ListItemTimeframe({listItem}) {
 }
 
 function NotesTextarea({listItem, user}) {
-  const [mutate,{error,isError,isLoading}] =  useUpdateItems=(user)
-  const debouncedMutate = React.useMemo(() => debounceFn(mutate, {wait: 300}), [])
+  const [mutate, {error, isError, isLoading}] = (useUpdateItems = user)
+  const debouncedMutate = React.useMemo(
+    () => debounceFn(mutate, {wait: 300}),
+    [],
+  )
   // 🐨 call useMutation here
   // the mutate function should call the list-items/:listItemId endpoint with a PUT
   //   and the updates as data. The mutate function will be called with the updates
@@ -138,7 +128,6 @@ function NotesTextarea({listItem, user}) {
   // then use the `onSettled` config option to queryCache.invalidateQueries('list-items')
   // 💣 DELETE THIS ESLINT IGNORE!! Don't ignore the exhaustive deps rule please
   // eslint-disable-next-line react-hooks/exhaustive-deps
-
 
   function handleNotesChange(e) {
     debouncedMutate({id: listItem.id, notes: e.target.value})
@@ -160,12 +149,13 @@ function NotesTextarea({listItem, user}) {
           Notes
         </label>
         {isError ? (
-          <ErrorMessage error={error} variant='inline'  
-          css={{marginLeft: 6,fontSize: '0.7em'}}
-          
+          <ErrorMessage
+            error={error}
+            variant="inline"
+            css={{marginLeft: 6, fontSize: '0.7em'}}
           />
         ) : null}
-      {isLoading ? <Spinner css={{marginLeft: 6}} /> : null}
+        {isLoading ? <Spinner css={{marginLeft: 6}} /> : null}
       </div>
       <Textarea
         id="notes"
@@ -177,5 +167,4 @@ function NotesTextarea({listItem, user}) {
   )
 }
 
-export { BookScreen }
-
+export {BookScreen}
