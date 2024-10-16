@@ -6,6 +6,7 @@ const {
   queryCache,
 } = require('react-query/dist/react-query.development')
 const {client} = require('./api-client')
+
 function useListItems(user) {
   const {data: listItem} = useQuery({
     queryKey: 'list-items',
@@ -22,23 +23,32 @@ function useListItems(user) {
 }
 
 const defaultMutationOptions = {
+  onerror(err, variables, recover) {
+    if (typeof recover === 'function') {
+      recover()
+    }
+  },
   onSettled: () => queryCache.invalidateQueries('list-items'),
   throwOnError: true,
 }
 function useRemoveListItem(user, options) {
   return useMutation(
-    ({listItemId}) => {
-      return client(`list-items/${listItemId}`, {
-        method: 'DELETE',
-        token: user.token,
-      })
-    },
+    ({id}) => client(`list-items/${id}`, {method: 'DELETE', token: user.token}),
     {
+      onMutate(newItem) {
+        const previousItems = queryCache.getQueryData('list-items')
+
+        queryCache.setQueryData('list-items', old => {
+          return old.filter(item => item.id !== newItem.id)
+        })
+
+        return () => queryCache.setQueryData('list-items', previousItems)
+      },
       ...defaultMutationOptions,
-      ...options,
     },
   )
 }
+
 function useListItem(user, bookId) {
   const listItems = useListItems(user)
   return listItems.find(li => li.bookId === bookId) || null
@@ -46,14 +56,24 @@ function useListItem(user, bookId) {
 
 function useUpdateItems(user, options) {
   return useMutation(
-    updates => {
-      return client('list-items', {
+    updates =>
+      client(`list-items/${updates.id}`, {
         method: 'PUT',
         data: updates,
         token: user.token,
-      })
-    },
+      }),
     {
+      onMutate(newItem) {
+        const previousItems = queryCache.getQueryData('list-items')
+
+        queryCache.setQueryData('list-items', old => {
+          return old.map(item => {
+            return item.id === newItem.id ? {...item, ...newItem} : item
+          })
+        })
+
+        return () => queryCache.setQueryData('list-items', previousItems)
+      },
       ...defaultMutationOptions,
       ...options,
     },
