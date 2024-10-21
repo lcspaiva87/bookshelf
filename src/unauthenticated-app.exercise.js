@@ -124,6 +124,27 @@ function UnauthenticatedApp() {
           gridGap: '0.75rem',
         }}
       >
+        <Modal>
+          <ModalOpenButton>
+            <Button variant="primary">Login</Button>
+          </ModalOpenButton>
+          <ModalContents>
+            <div css={{display: 'flex', justifyContent: 'flex-end'}}>
+              {/* 💰 here's what you should put in your <ModalDismissButton> */}
+              <ModalDismissButton>
+                <CircleButton>
+                  <VisuallyHidden>Close</VisuallyHidden>
+                  <span aria-hidden>×</span>
+                </CircleButton>
+              </ModalDismissButton>
+            </div>
+            <h3 css={{textAlign: 'center', fontSize: '2em'}}>Login</h3>
+            <LoginForm
+              onSubmit={login}
+              submitButton={<Button variant="primary">Login</Button>}
+            />
+          </ModalContents>
+        </Modal>
         {/* 🐨 replace both of these with the Modal compound components */}
         {/*
           🦉 when you're done, it'll look a lot more complicated than
