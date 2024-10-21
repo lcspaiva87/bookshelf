@@ -1,7 +1,8 @@
 import bookPlaceholderSvg from 'assets/book-placeholder.svg'
-import {AuthContext} from 'context/aut-context'
 import {queryCache, useQuery} from 'react-query'
 import {client} from './api-client'
+import {useCallback, useContext} from 'react'
+import {AuthContext} from 'context/auth-context'
 const loadingBook = {
   title: 'Loading...',
   author: 'loading...',
@@ -29,15 +30,15 @@ const getBookSearchConfig = (query, user) => ({
 })
 
 function useBookSearch(query) {
-  const {user} = AuthContext(AuthContext)
+  const {user} = useContext(AuthContext)
+
   const result = useQuery(getBookSearchConfig(query, user))
   console.log(result)
   return {...result, books: result.data ?? loadingBooks}
 }
 
 function useBook(bookId) {
-  const {user} = AuthContext(AuthContext)
-
+  const {user} = useContext(AuthContext)
   const {data} = useQuery({
     queryKey: ['book', {bookId}],
     queryFn: () =>
@@ -48,6 +49,16 @@ function useBook(bookId) {
   return data ?? loadingBook
 }
 
+function useRefetchBookSearchQuery() {
+  const {user} = useContext(AuthContext)
+  return useCallback(
+    async function refetchBookSearchQuery() {
+      queryCache.removeQueries('bookSearch')
+      queryCache.prefetchQuery(getBookSearchConfig('', user))
+    },
+    [user],
+  )
+}
 function refetchBookSearchQuery(user) {
   queryCache.removeQueries('bookSearch')
   queryCache.prefetchQuery(getBookSearchConfig('', user))
@@ -56,4 +67,10 @@ function refetchBookSearchQuery(user) {
 function setQueryDataForBook(book) {
   queryCache.setQueryData(['book', {bookId: book.id}], book)
 }
-export {refetchBookSearchQuery, setQueryDataForBook, useBook, useBookSearch}
+export {
+  refetchBookSearchQuery,
+  setQueryDataForBook,
+  useBook,
+  useRefetchBookSearchQuery,
+  useBookSearch,
+}

@@ -10,6 +10,7 @@ import * as colors from 'styles/colors'
 import {BookRow} from 'components/book-row'
 import {BookListUL, Spinner, Input} from 'components/lib'
 import bookPlaceholderSvg from 'assets/book-placeholder.svg'
+import {AuthContext} from 'context/auth-context'
 
 const loadingBook = {
   title: 'Loading...',
@@ -26,9 +27,10 @@ const loadingBooks = Array.from({length: 10}, (v, index) => ({
 }))
 
 function DiscoverBooksScreen({user}) {
+  const {user: as} = React.useContext(AuthContext)
   const [query, setQuery] = React.useState('')
   const [queried, setQueried] = React.useState(false)
-
+  console.log('users', as)
   const {
     data: books = loadingBooks,
     error,

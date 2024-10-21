@@ -74,6 +74,7 @@ function App() {
 
   if (isSuccess) {
     const props = {user, login, register, logout}
+    console.log('useras', user)
     return (
       <AuthContext.Provider value={props}>
         {user ? (

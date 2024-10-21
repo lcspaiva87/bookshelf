@@ -30,6 +30,7 @@ function BookScreen({user}) {
   // 🐨 call useQuery to get the list item from the list-items endpoint
   // queryKey should be 'list-items'
   const listItem = useListItems(user, bookId)
+  console.log('listItem', listItem)
   // 🦉 NOTE: the backend doesn't support getting a single list-item by it's ID
   // and instead expects us to cache all the list items and look them up in our
   // cache. This works out because we're using react-query for caching!

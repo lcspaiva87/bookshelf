@@ -7,7 +7,11 @@ import {FaSearch, FaTimes} from 'react-icons/fa'
 import {BookRow} from 'components/book-row'
 import {BookListUL, Input, Spinner} from 'components/lib'
 import * as colors from 'styles/colors'
-import {refetchBookSearchQuery, useBookSearch} from 'utils/books.exercise'
+import {
+  refetchBookSearchQuery,
+  useRefetchBookSearchQuery,
+  useBookSearch,
+} from 'utils/books.exercise'
 
 function DiscoverBooksScreen({user}) {
   const [query, setQuery] = React.useState('')
@@ -17,6 +21,8 @@ function DiscoverBooksScreen({user}) {
   // the queryFn should be the same thing we have in the run function below
   // you'll get back the same stuff you get from useAsync, (except the run function)
   const {books, error, isLoading, isError, isSuccess} = useBookSearch(query)
+
+  const refetBookSearchQuery = useRefetchBookSearchQuery()
 
   React.useEffect(() => {
     return () => refetchBookSearchQuery(user)
