@@ -18,6 +18,12 @@ import {
 import {Logo} from './components/logo'
 import {useAuth} from './context/auth-context'
 import {useAsync} from './utils/hooks'
+import {
+  ModalDismissButton,
+  Modal,
+  ModalContents,
+  ModalOpenButton,
+} from 'components/modal.exercise'
 
 function LoginForm({onSubmit, submitButton}) {
   const {isLoading, isError, error, run} = useAsync()
@@ -126,18 +132,11 @@ function UnauthenticatedApp() {
       >
         <Modal>
           <ModalOpenButton>
-            <Button variant="primary">Login</Button>
+            <Button onClick={() => console.log('login')} variant="primary">
+              Login
+            </Button>
           </ModalOpenButton>
-          <ModalContents>
-            <div css={{display: 'flex', justifyContent: 'flex-end'}}>
-              {/* 💰 here's what you should put in your <ModalDismissButton> */}
-              <ModalDismissButton>
-                <CircleButton>
-                  <VisuallyHidden>Close</VisuallyHidden>
-                  <span aria-hidden>×</span>
-                </CircleButton>
-              </ModalDismissButton>
-            </div>
+          <ModalContents arial-label="Login form" title="Login">
             <h3 css={{textAlign: 'center', fontSize: '2em'}}>Login</h3>
             <LoginForm
               onSubmit={login}
@@ -151,20 +150,34 @@ function UnauthenticatedApp() {
              it did when you started, but the extra credits will help clean
              things up a bit.
         */}
-        <LoginFormModal
+        {/* <LoginFormModal
           onSubmit={login}
           modalTitleText="Login"
           modalLabelText="Login form"
           submitButton={<Button variant="primary">Login</Button>}
           openButton={<Button variant="primary">Login</Button>}
-        />
-        <LoginFormModal
-          onSubmit={register}
-          modalTitleText="Register"
-          modalLabelText="Registration form"
-          submitButton={<Button variant="secondary">Register</Button>}
-          openButton={<Button variant="secondary">Register</Button>}
-        />
+        /> */}
+
+        <Modal>
+          <ModalOpenButton>
+            <Button variant="primary">Register</Button>
+          </ModalOpenButton>
+          <ModalContents arial-label="Registration form" title="Register">
+            {/* <div css={{display: 'flex', justifyContent: 'flex-end'}}>
+              <ModalDismissButton>
+                <CircleButton>
+                  <VisuallyHidden>Close</VisuallyHidden>
+                  <span aria-hidden>×</span>
+                </CircleButton>
+              </ModalDismissButton>
+            </div>
+            <h3 css={{textAlign: 'center', fontSize: '2em'}}>Register</h3> */}
+            <LoginForm
+              onSubmit={register}
+              submitButton={<Button variant="primary">Register</Button>}
+            />
+          </ModalContents>
+        </Modal>
       </div>
     </div>
   )
