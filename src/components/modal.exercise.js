@@ -51,9 +51,12 @@ import React from 'react'
 
 // 💯 Create ModalContentsBase
 // export * from './modal.extra-2'
+
+//TODO:Sempre que criar um novo componente, importa import {jsx} from '@emotion/core'
+
 /** @jsx jsx */
-import {CircleButton, Dialog} from './lib'
 import {jsx} from '@emotion/core'
+import {CircleButton, Dialog} from './lib'
 import VisuallyHidden from '@reach/visually-hidden'
 const callAll =
   (...fns) =>
